@@ -1,13 +1,19 @@
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.StringJoiner;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DaemonExecutor;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
+import org.apache.commons.exec.Executor;
+import org.apache.commons.exec.PumpStreamHandler;
 
 public class Main {
 	static int numberOfGoals;
@@ -59,7 +65,7 @@ public class Main {
 					+ time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock)
 					+ "\nand you will finish your work and break at:\n"
 					+ time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
-			//unixNotification("whats up buttercup", startTimeForNextIteration);
+		
 			notificationBasedOnOS("Done! Your upcoming task is: "+goal,time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
 		}
 	}
@@ -83,6 +89,9 @@ public class Main {
 	}
 
 	public static void notificationBasedOnOS(String message, LocalTime timeMsgIsDisplayed) throws IOException, InterruptedException {
+		ProcessBuilder pr = new ProcessBuilder();
+		String javaHome = System.getProperty("java.home");
+		String userDir = System.getProperty("user.dir");
 		Runtime run = Runtime.getRuntime();
 		if (isWindows()) {
 			Process process = run.exec("msg \"%username%\" \"" + message + "\"");
@@ -102,8 +111,18 @@ public class Main {
 			System.out.println("msg \"%username%\" \"" + message + "\"");
 
 		} else if (isUnix()) {
-			run.exec(unixNotification(message, timeMsgIsDisplayed));
+//			pr.command(unixNotification(message, timeMsgIsDisplayed));
+//			Process process = pr.start();
+//			process.wait();
+			
+			CommandLine commandLine = new CommandLine(unixNotification(message, timeMsgIsDisplayed));
+			System.out.println("the command is:"+commandLine);
+			DefaultExecutor executor = new DefaultExecutor();
+			executor.setExitValue(0);
+			int exitValue = executor.execute(commandLine);
+		//	getProcEnvironment()
 		}
+		
 		
 	}
 
@@ -133,12 +152,12 @@ public class Main {
 		String TIME_SUFFIX = "' | at " + time + "";
 		String ICON_TEXT_MSG = "notify-send -i face-wink \"" + msg + "\"";
 		String SPEECH_ALERT = "spd-say \"" + msg + "\"";
-
+String message = "echo 'notify-send -i face-wink \"" + msg + "\"; spd-say \"" + msg + "\"' | at " + time + "";
 		StringJoiner joiner = new StringJoiner("; ", PREFIX, TIME_SUFFIX);
 		joiner.add(ICON_TEXT_MSG).add(SPEECH_ALERT);
-		System.out.print(joiner.toString());
-		return joiner.toString();
-
+		//System.out.print(joiner.toString());
+		//return joiner.toString();
+return message;
 	}
 	
 	public static String windowsNotification(String msg) {
