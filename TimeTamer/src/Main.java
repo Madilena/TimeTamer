@@ -1,10 +1,15 @@
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalTime;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.StringJoiner;
 import org.apache.commons.exec.CommandLine;
@@ -14,6 +19,9 @@ import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.environment.EnvironmentUtils;
+import org.apache.commons.exec.launcher.CommandLauncher;
+import org.apache.commons.exec.launcher.CommandLauncherFactory;
 
 public class Main {
 	static int numberOfGoals;
@@ -24,7 +32,6 @@ public class Main {
 	static Scanner keyboardReader = new Scanner(System.in);
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-
 		printWelcomeMsg();
 
 		System.out.println("How many work-break blocks will you do today?");
@@ -65,8 +72,9 @@ public class Main {
 					+ time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock)
 					+ "\nand you will finish your work and break at:\n"
 					+ time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
-		
-			notificationBasedOnOS("Done! Your upcoming task is: "+goal,time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
+
+			notificationBasedOnOS("Done! Your upcoming task is: " + goal,
+					time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
 		}
 	}
 
@@ -87,43 +95,66 @@ public class Main {
 		}
 		return userAcceptsContract;
 	}
-
-	public static void notificationBasedOnOS(String message, LocalTime timeMsgIsDisplayed) throws IOException, InterruptedException {
-		ProcessBuilder pr = new ProcessBuilder();
+	static String userHome = System.getProperty("user.home");
+	public static void notificationBasedOnOS(String message, LocalTime timeMsgIsDisplayed)
+			throws IOException, InterruptedException {
+		
+		
+		String userName = System.getProperty("user.name");
 		String javaHome = System.getProperty("java.home");
 		String userDir = System.getProperty("user.dir");
+		File dir = new File(userHome);
 		Runtime run = Runtime.getRuntime();
 		if (isWindows()) {
 			Process process = run.exec("msg \"%username%\" \"" + message + "\"");
 
-		    BufferedWriter writer = new BufferedWriter(
-		            new OutputStreamWriter(process.getOutputStream()));
-		    writer.write("msg \"%username%\" \"" + message + "\"");
-		    writer.close();
-		    BufferedReader reader = new BufferedReader(new InputStreamReader(
-		            process.getInputStream()));
-		    
-		    String line;
-		    while ((line = reader.readLine()) != null) {
-		        System.out.println(line);
-		    }
-		    reader.close();
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+			writer.write("msg \"%username%\" \"" + message + "\"");
+			writer.close();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+			String line;
+			while ((line = reader.readLine()) != null) {
+				System.out.println(line);
+			}
+			reader.close();
 			System.out.println("msg \"%username%\" \"" + message + "\"");
 
 		} else if (isUnix()) {
-//			pr.command(unixNotification(message, timeMsgIsDisplayed));
-//			Process process = pr.start();
+			//set the list of commands. I think the process builder is reading the string as an actual executable file :(
+			ProcessBuilder pr = new ProcessBuilder();
+			pr.command("/bin/bash","-c","echo 'notify-send -i face-wink \""+message+"\"; spd-say \""+message+"\"' | at "+timeMsgIsDisplayed+"")
+	
+			;
+			//.command("/bin/bash","-c","spd-say \"Done! Your upcoming task is: yes\"");
+			pr.environment();
+			pr.directory(new File(userHome));
+			System.out.println("the process builder gets the directory as:_"+pr.directory());
+			System.out.println("the directory exists:"+pr.directory().exists());
+			//pr.command("/bin/bash", unixNotification(message, timeMsgIsDisplayed)).wait();
+			Process process = pr.start();
+			System.out.println("the process is "+process);
+			BufferedReader processOutput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			BufferedWriter processInput = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
+//			
 //			process.wait();
-			
-			CommandLine commandLine = new CommandLine(unixNotification(message, timeMsgIsDisplayed));
-			System.out.println("the command is:"+commandLine);
-			DefaultExecutor executor = new DefaultExecutor();
-			executor.setExitValue(0);
-			int exitValue = executor.execute(commandLine);
-		//	getProcEnvironment()
+
+			// CommandLine commandLine = new CommandLine(unixNotification(message,
+			// timeMsgIsDisplayed));
+			// Map<String, String> env = EnvironmentUtils.getProcEnvironment();
+			// //env.put("PATH", env.get("PATH") + ":" + new File(dir,
+			// "node").getAbsolutePath());
+			// System.out.println("the command is:"+commandLine +" and the environment is
+			// "+env);
+			// DefaultExecutor executor = new DefaultExecutor();
+			// executor.setWorkingDirectory(dir);
+			// executor.setExitValue(0);
+			// command(message, timeMsgIsDisplayed);
+			// int exitValue = executor.execute(command(message, timeMsgIsDisplayed), env);
+			// CommandLauncher a = CommandLauncherFactory.createVMLauncher();
+			// a.exec(command(message, timeMsgIsDisplayed), env, dir);
 		}
-		
-		
+
 	}
 
 	private static String OS = System.getProperty("os.name").toLowerCase();
@@ -152,17 +183,30 @@ public class Main {
 		String TIME_SUFFIX = "' | at " + time + "";
 		String ICON_TEXT_MSG = "notify-send -i face-wink \"" + msg + "\"";
 		String SPEECH_ALERT = "spd-say \"" + msg + "\"";
-String message = "echo 'notify-send -i face-wink \"" + msg + "\"; spd-say \"" + msg + "\"' | at " + time + "";
+		String message = userHome+" echo 'notify-send -i face-wink \"" + msg + "\"; spd-say \"" + msg + "\"' | at " + time + "";
 		StringJoiner joiner = new StringJoiner("; ", PREFIX, TIME_SUFFIX);
 		joiner.add(ICON_TEXT_MSG).add(SPEECH_ALERT);
-		//System.out.print(joiner.toString());
-		//return joiner.toString();
-return message;
+		// System.out.print(joiner.toString());
+		// return joiner.toString();
+		return message;
 	}
-	
+
+	public static CommandLine command(String msg, LocalTime timeMsgIsDisplayed) {
+		CommandLine cmd = new CommandLine("notify-send -i face-wink");
+		String time = convertLocalTimeToString(timeMsgIsDisplayed);
+		// cmd.addArgument("echo");
+		// cmd.addArgument("notify-send -i face-wink");
+		cmd.addArgument("\"" + msg + "\"");
+		// cmd.addArgument("spd-say /"+msg+"/");
+		cmd.addArgument(" | at " + time);
+		System.out.println("command is" + cmd);
+		return cmd;
+
+	}
+
 	public static String windowsNotification(String msg) {
 		return OS;
-		
+
 	}
 
 	public static String convertLocalTimeToString(LocalTime time) {
