@@ -17,11 +17,12 @@ public class Main {
 	static Scanner keyboardReader = new Scanner(System.in);
 	private static String OS = System.getProperty("os.name").toLowerCase();
 	
-	
 	public static void main(String[] args) throws IOException, InterruptedException {
+		Gui goo = new Gui();
+		goo.createAndShowGUI();
 		printWelcomeMsg();
 
-		System.out.println("How many work-break blocks will you do today?");
+		System.out.println("How many tomatos would you like?");
 		numberOfGoals = keyboardReader.nextInt();
 		
 		executeQuestions(numberOfGoals);
@@ -38,14 +39,14 @@ public class Main {
 				startTimeForNextIteration = time.timeAtThisInstant();
 			}
 			
-			System.out.println("How long do you want work pomodoro number " + i + " in min?");
+			System.out.println("How long do you want work pomodoro #" + i + " (in min)?");
 			workTimeBlock = keyboardReader.nextInt();
 
-			System.out.println("How long do you want your break pomodoro number " + i + " in min?");
+			System.out.println("How long do you want your break pomodoro #" + i + " (in min)?");
 			breakTimeBlock = keyboardReader.nextInt();
 			keyboardReader.nextLine();
 
-			System.out.println("What is your goal for pomodoro number " + i + "?");
+			System.out.println("What is your goal for pomodoro #" + i + "?");
 			goal = keyboardReader.nextLine();
 
 			System.out.println("\nPlease confirm or deny with Yes or No:\nYou want to work for " + workTimeBlock
@@ -61,10 +62,13 @@ public class Main {
 			
 			System.out.println("You will finish work at:\n"
 					+ time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock)
-					+ "\nand you will finish your work and break at:\n"
+					+ "\nand you will finish your break at:\n"
 					+ time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
 
-			notificationBasedOnOS("Your pomodoro for " + goal + " is ketchupped",
+			notificationBasedOnOS("Your work tomato for " + goal + " is ketchupped",
+					time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock));
+			
+			notificationBasedOnOS("Your break tomato for " + goal + " is ketchupped",
 					time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
 		}
 	}
