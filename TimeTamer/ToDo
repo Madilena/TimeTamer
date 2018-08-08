@@ -1,0 +1,4 @@
+javax gui that takes user input for app params
+pause button
+after pomodoro time block is complete, gui prompts for user feedback
+have all data, including user feedback, export to excel sheet
