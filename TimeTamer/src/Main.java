@@ -8,6 +8,8 @@ import java.time.LocalTime;
 import java.util.Scanner;
 
 import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 public class Main {
@@ -23,23 +25,22 @@ public class Main {
 	private static String OS = System.getProperty("os.name").toLowerCase();
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-//		Gui goo = new Gui();
-//		goo.launch(args);
+		Application.launch(Gui.class, args);
 		printWelcomeMsg();
 
 		System.out.println("How many tomatos would you like?");
 		numberOfGoals = keyboardReader.nextInt();
 		
 		executeQuestions(numberOfGoals);
-
+		
 		System.exit(0);
 	}
 
-	public static void executeQuestions(int numberOfThingsToDo) throws IOException, InterruptedException {
+	public static void executeQuestions(int numberOfGoals) throws IOException, InterruptedException {
 		TimeBlocks time = new TimeBlocks();
 		LocalTime startTimeForNextIteration = null;
 
-		for (int i = 1; i < numberOfThingsToDo+1; i++) {
+		for (int i = 1; i < numberOfGoals+1; i++) {
 			if (i == 1) {
 				startTimeForNextIteration = time.timeAtThisInstant();
 			}
@@ -75,6 +76,7 @@ public class Main {
 			
 			notificationBasedOnOS("Your break tomato for: " + goal + " is ketchupped.",
 				time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
+			
 		}
 	
 
@@ -86,7 +88,11 @@ public class Main {
 			userAcceptsContract = true;
 		} else if (userResponse.equalsIgnoreCase("sure")) {
 			userAcceptsContract = true;
-		} else if (userResponse.equalsIgnoreCase("okeydokey")) {
+		}else if (userResponse.equalsIgnoreCase("affirmative")) {
+			userAcceptsContract = true;
+		} else if (userResponse.equalsIgnoreCase("10-4")) {
+			userAcceptsContract = true;
+		}else if (userResponse.equalsIgnoreCase("okeydokey")) {
 			userAcceptsContract = true;
 		}else if (userResponse.equalsIgnoreCase("fine")) {
 			userAcceptsContract = true;
@@ -107,6 +113,7 @@ public class Main {
 			pr.command("/bin/bash", "-c", "echo 'notify-send -i face-wink \"" + message + "\"; spd-say \"" + message
 					+ "\" -r -15' | at " + timeMsgIsDisplayed + "");
 			pr.start();
+			
 		} else if (isWindows()) {
 
 			System.out.println("The desktop notification program, as of 8/8/18, does not work on Windows");
@@ -151,5 +158,6 @@ public class Main {
 	public static String convertLocalTimeToString(LocalTime time) {
 		return time.toString();
 	}
+
 
 }

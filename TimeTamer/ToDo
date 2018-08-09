@@ -1,7 +1,8 @@
 
 have gui with progress bar display in background until progress bar is empty.
-pause button
 
 have all data, including user feedback, export to excel sheet
+
 javax gui that takes user input for app params
 after pomodoro time block is complete, gui prompts for user feedback
+pause button
