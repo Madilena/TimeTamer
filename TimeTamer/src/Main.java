@@ -7,19 +7,24 @@ import java.io.OutputStreamWriter;
 import java.time.LocalTime;
 import java.util.Scanner;
 
+import javafx.application.Application;
+import javafx.stage.Stage;
+
 public class Main {
 	
+//	private static final Stage stage = new Stage();
 	static int numberOfGoals;
 	static int workTimeBlock;
 	static int breakTimeBlock;
 	static String goal;
+	static String nextGoal;
 	static String acceptGoal;
 	static Scanner keyboardReader = new Scanner(System.in);
 	private static String OS = System.getProperty("os.name").toLowerCase();
-	
+
 	public static void main(String[] args) throws IOException, InterruptedException {
-		Gui goo = new Gui();
-		goo.createAndShowGUI();
+//		Gui goo = new Gui();
+//		goo.launch(args);
 		printWelcomeMsg();
 
 		System.out.println("How many tomatos would you like?");
@@ -34,19 +39,19 @@ public class Main {
 		TimeBlocks time = new TimeBlocks();
 		LocalTime startTimeForNextIteration = null;
 
-		for (int i = 0; i < numberOfThingsToDo; i++) {
-			if (i == 0) {
+		for (int i = 1; i < numberOfThingsToDo+1; i++) {
+			if (i == 1) {
 				startTimeForNextIteration = time.timeAtThisInstant();
 			}
 			
-			System.out.println("How long do you want work pomodoro #" + i + " (in min)?");
+			System.out.println("How long do you want work tomato #" + i + " (in min)?");
 			workTimeBlock = keyboardReader.nextInt();
 
-			System.out.println("How long do you want your break pomodoro #" + i + " (in min)?");
+			System.out.println("How long do you want break tomato #" + i + " (in min)?");
 			breakTimeBlock = keyboardReader.nextInt();
 			keyboardReader.nextLine();
 
-			System.out.println("What is your goal for pomodoro #" + i + "?");
+			System.out.println("What is your goal for tomato #" + i + " ?");
 			goal = keyboardReader.nextLine();
 
 			System.out.println("\nPlease confirm or deny with Yes or No:\nYou want to work for " + workTimeBlock
@@ -64,14 +69,14 @@ public class Main {
 					+ time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock)
 					+ "\nand you will finish your break at:\n"
 					+ time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
-
-			notificationBasedOnOS("Your work tomato for " + goal + " is ketchupped",
+		}
+			notificationBasedOnOS("Your work tomato for: " + goal + " is ketchupped",
 					time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock));
 			
-			notificationBasedOnOS("Your break tomato for " + goal + " is ketchupped",
-					time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
+			notificationBasedOnOS("Your break tomato for: " + goal + " is ketchupped.",
+				time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
 		}
-	}
+	
 
 	public static boolean userAcceptsGoal(String yesOrNo) {
 		String userResponse = removeSpecialChar(yesOrNo.trim());
@@ -100,11 +105,11 @@ public class Main {
 			ProcessBuilder pr = new ProcessBuilder();
 			pr.directory();
 			pr.command("/bin/bash", "-c", "echo 'notify-send -i face-wink \"" + message + "\"; spd-say \"" + message
-					+ "\"' | at " + timeMsgIsDisplayed + "");
+					+ "\" -r -15' | at " + timeMsgIsDisplayed + "");
 			pr.start();
 		} else if (isWindows()) {
 
-			System.out.println("This program as of 8/8/18 does not work on windows");
+			System.out.println("The desktop notification program, as of 8/8/18, does not work on Windows");
 			Runtime run = Runtime.getRuntime();
 			Process process = run.exec("msg \"%username%\" \"" + message + "\"");
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));

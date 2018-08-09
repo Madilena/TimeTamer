@@ -16,5 +16,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/xpanxion/Desktop/jdk1.8.0_161/jre/lib/ext/jfxrt.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
