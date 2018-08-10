@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import javafx.application.Application;
@@ -22,7 +24,10 @@ public class Main {
 	static Scanner keyboardReader = new Scanner(System.in);
 	private static String OS = System.getProperty("os.name").toLowerCase();
 	static TimeBlocks time = new TimeBlocks();
-
+	static List<Integer> listWorkTime =  new ArrayList<>();
+	static List<Integer> listBreakTime =  new ArrayList<>();
+	
+	
 	public static void main(String[] args) throws IOException, InterruptedException {
 		// Application.launch(Gui.class, args);
 		printWelcomeMsg();
@@ -67,14 +72,40 @@ public class Main {
 					+ "\nand you will finish your break at:\n"
 					+ time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
 
+			addIntsToList(listWorkTime ,workTimeBlock);
+			addIntsToList(listBreakTime ,breakTimeBlock);
+			
 			notificationBasedOnOS("Your work tomato for: " + goal + " is ketchupped",
 					time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock));
 
 			notificationBasedOnOS("Your break tomato for: " + goal + " is ketchupped.",
 					time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
+			
 			startTimeForNextIteration = time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock,
 					breakTimeBlock);
+			
 		}
+		
+		listWorkTime.stream().reduce((x1,x2)->x1+x2).ifPresent(p->printWorkTime(p));
+		listBreakTime.stream().reduce((x1,x2)->x1+x2).ifPresent(p->printWorkTime(p));
+	}
+	
+	public static List<Integer> listOfWorkMin(int workMin){
+		List<Integer> workMinList = new ArrayList<>();
+		workMinList.add(workMin);
+		return workMinList;
+	}
+	
+	public static void addIntsToList (List<Integer>list, Integer num) {
+		list.add(num);
+	}
+	
+	public static void printWorkTime(int min) {
+		System.out.println("Your total work time will be: "+min+ " min");
+	}
+	
+	public static void printBreakTime(int min) {
+		System.out.println("Your total break time will be: "+min+ " min");
 	}
 	
 	public boolean userClickedPauseButton() {
