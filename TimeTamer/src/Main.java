@@ -7,9 +7,14 @@ import java.io.OutputStreamWriter;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.SortedMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -26,7 +31,8 @@ public class Main {
 	static Scanner keyboardReader = new Scanner(System.in);
 	private static String OS = System.getProperty("os.name").toLowerCase();
 	static TimeBlocks time = new TimeBlocks();
-	static Map<String, List<String>> goalMap = new HashMap<>();
+	static LinkedHashMap<String, List<String>> goalMap = new LinkedHashMap<>();
+	static Map<String, Integer> goalMapWithTimeInts = new HashMap<>();
 	static List<Integer> listWorkTime = new ArrayList<>();
 	static List<Integer> listBreakTime = new ArrayList<>();
 
@@ -69,37 +75,62 @@ public class Main {
 				System.out.println("\nDo today what others won't. Do tomorrow what other's can't. Let's start over!");
 				i = i - 1;
 			}
-			
+
 			if (userAcceptsGoal(acceptGoal)) {
 				System.out.println("You will finish work at:\n"
 						+ time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock)
-						+ "\nand you will finish your break at:\n"
-						+ time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
+						+ "\nand you will finish your break at:\n" + time.addBreakTimeBlockToWorkTimeBlock(
+								startTimeForNextIteration, workTimeBlock, breakTimeBlock));
 
 				addIntsToList(listWorkTime, workTimeBlock);
 				addIntsToList(listBreakTime, breakTimeBlock);
-				
+
 				notificationBasedOnOS("Your work tomato for: " + goal + " is ketchupped",
 						time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock));
 
 				notificationBasedOnOS("Your break tomato for: " + goal + " is ketchupped.", time
 						.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
-			
-			startTimeForNextIteration = time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock,
-					breakTimeBlock);
-			
-			addGoalAndTimesToMap(goalMap, "Tomato " + i + ": " + goal + "Finishes at " + startTimeForNextIteration,
-					workTimeBlock, breakTimeBlock);
-			}
-		}
 
+				startTimeForNextIteration = time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration,
+						workTimeBlock, breakTimeBlock);
+
+				addGoalAndTimesToMap(goalMap,
+						"Tomato " + i + ": \"" + goal + "\" finishes at " + startTimeForNextIteration, workTimeBlock,
+						breakTimeBlock);
+			}
+			
+			addGoalAndSingleTimeToMap(goalMapWithTimeInts, goal, workTimeBlock);
+
+		}
+		
 		listWorkTime.stream().reduce((x1, x2) -> x1 + x2).ifPresent(p -> printWorkTime(p));
 		listBreakTime.stream().reduce((x1, x2) -> x1 + x2).ifPresent(p -> printBreakTime(p));
 
 		goalMap.forEach((K, Y) -> {
 			System.out.println(K + " " + Y);
 		});
+
+//https://www.mkyong.com/java8/java-8-streams-map-examples/
+		Map<String, Integer> persimmons = filterByValue(goalMapWithTimeInts, m -> m > 25);
+		Map<String, Integer> greenTomatos = filterByValue(goalMapWithTimeInts, m -> m < 25);
+		Map<String, Integer> ripeTomatos = filterByValue(goalMapWithTimeInts, m -> m == 25);
+		System.out.println("Persimmons (> 25 min):\n" + persimmons);
+		System.out.println("Green Tomatos (< 25 min):\n" + greenTomatos);
+		System.out.println("Ripe Tomatos (25 min):\n" + ripeTomatos);
+
 	}
+
+	public static <K, V> Map<K, V> filterByValue(Map<K, V> map, Predicate<V> predicate) {
+		return map.entrySet().stream().filter(x -> predicate.test(x.getValue()))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
+
+	static Function<Integer, Predicate<Integer>> isGreaterThan = (Integer pivot) -> {
+		Predicate<Integer> isGreaterThanPivot = (Integer candidate) -> {
+			return candidate > pivot;
+		};
+		return isGreaterThanPivot;
+	};
 
 	public static void addGoalAndTimesToMap(Map<String, List<String>> map, String goal, Integer workTime,
 			Integer breakTime) {
@@ -107,6 +138,10 @@ public class Main {
 		listOfWorkAndBreakTimes.add("work mins: " + Integer.toString(workTime));
 		listOfWorkAndBreakTimes.add("break mins: " + Integer.toString(+breakTime));
 		map.put(goal, listOfWorkAndBreakTimes);
+	}
+
+	public static void addGoalAndSingleTimeToMap(Map<String, Integer> map, String goal, Integer time) {
+		map.put(goal, time);
 	}
 
 	public static void printGoalMap(Map<String, List<String>> map) {
