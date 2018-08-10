@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 import javafx.application.Application;
@@ -24,14 +26,14 @@ public class Main {
 	static Scanner keyboardReader = new Scanner(System.in);
 	private static String OS = System.getProperty("os.name").toLowerCase();
 	static TimeBlocks time = new TimeBlocks();
-	static List<Integer> listWorkTime =  new ArrayList<>();
-	static List<Integer> listBreakTime =  new ArrayList<>();
-	
-	
+	static Map<String, List<String>> goalMap = new HashMap<>();
+	static List<Integer> listWorkTime = new ArrayList<>();
+	static List<Integer> listBreakTime = new ArrayList<>();
+
 	public static void main(String[] args) throws IOException, InterruptedException {
 		// Application.launch(Gui.class, args);
 		printWelcomeMsg();
-		System.out.println("the time at this instant is " + time.timeAtThisInstant());
+		System.out.println("The time at this instant is " + time.timeAtThisInstant());
 		System.out.println("How many tomatos would you like?");
 		numberOfGoals = keyboardReader.nextInt();
 
@@ -64,54 +66,70 @@ public class Main {
 			acceptGoal = keyboardReader.nextLine();
 
 			if (!userAcceptsGoal(acceptGoal)) {
-				System.out.println("\nDo today what others won't. Do tomorrow what other's can't. Let's do this!");
+				System.out.println("\nDo today what others won't. Do tomorrow what other's can't. Let's start over!");
+				i = i - 1;
 			}
 			
-			System.out.println("You will finish work at:\n"
-					+ time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock)
-					+ "\nand you will finish your break at:\n"
-					+ time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
+			if (userAcceptsGoal(acceptGoal)) {
+				System.out.println("You will finish work at:\n"
+						+ time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock)
+						+ "\nand you will finish your break at:\n"
+						+ time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
 
-			addIntsToList(listWorkTime ,workTimeBlock);
-			addIntsToList(listBreakTime ,breakTimeBlock);
-			
-			notificationBasedOnOS("Your work tomato for: " + goal + " is ketchupped",
-					time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock));
+				addIntsToList(listWorkTime, workTimeBlock);
+				addIntsToList(listBreakTime, breakTimeBlock);
+				
+				notificationBasedOnOS("Your work tomato for: " + goal + " is ketchupped",
+						time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock));
 
-			notificationBasedOnOS("Your break tomato for: " + goal + " is ketchupped.",
-					time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
+				notificationBasedOnOS("Your break tomato for: " + goal + " is ketchupped.", time
+						.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
 			
 			startTimeForNextIteration = time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock,
 					breakTimeBlock);
 			
+			addGoalAndTimesToMap(goalMap, "Tomato " + i + ": " + goal + "Finishes at " + startTimeForNextIteration,
+					workTimeBlock, breakTimeBlock);
+			}
 		}
-		
-		listWorkTime.stream().reduce((x1,x2)->x1+x2).ifPresent(p->printWorkTime(p));
-		listBreakTime.stream().reduce((x1,x2)->x1+x2).ifPresent(p->printWorkTime(p));
+
+		listWorkTime.stream().reduce((x1, x2) -> x1 + x2).ifPresent(p -> printWorkTime(p));
+		listBreakTime.stream().reduce((x1, x2) -> x1 + x2).ifPresent(p -> printBreakTime(p));
+
+		goalMap.forEach((K, Y) -> {
+			System.out.println(K + " " + Y);
+		});
 	}
-	
-	public static List<Integer> listOfWorkMin(int workMin){
-		List<Integer> workMinList = new ArrayList<>();
-		workMinList.add(workMin);
-		return workMinList;
+
+	public static void addGoalAndTimesToMap(Map<String, List<String>> map, String goal, Integer workTime,
+			Integer breakTime) {
+		List<String> listOfWorkAndBreakTimes = new ArrayList<>();
+		listOfWorkAndBreakTimes.add("work mins: " + Integer.toString(workTime));
+		listOfWorkAndBreakTimes.add("break mins: " + Integer.toString(+breakTime));
+		map.put(goal, listOfWorkAndBreakTimes);
 	}
-	
-	public static void addIntsToList (List<Integer>list, Integer num) {
+
+	public static void printGoalMap(Map<String, List<String>> map) {
+		System.out.println("Your goal itinerary:\n" + map);
+	}
+
+	public static void addIntsToList(List<Integer> list, Integer num) {
 		list.add(num);
 	}
-	
+
 	public static void printWorkTime(int min) {
-		System.out.println("Your total work time will be: "+min+ " min");
+		System.out.println("Your total work time will be: " + min + " min");
 	}
-	
+
 	public static void printBreakTime(int min) {
-		System.out.println("Your total break time will be: "+min+ " min");
+		System.out.println("Your total break time will be: " + min + " min");
 	}
-	
+
 	public boolean userClickedPauseButton() {
+		// TODO: need to build gui so that clicking button action returns boolean val
 		return true;
 	}
-	
+
 	public void deleteAllAtNotifcations() throws IOException {
 		if (userClickedPauseButton()) {
 			ProcessBuilder pr = new ProcessBuilder();
