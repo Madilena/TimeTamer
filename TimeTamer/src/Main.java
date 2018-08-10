@@ -13,8 +13,6 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 public class Main {
-	
-//	private static final Stage stage = new Stage();
 	static int numberOfGoals;
 	static int workTimeBlock;
 	static int breakTimeBlock;
@@ -23,28 +21,29 @@ public class Main {
 	static String acceptGoal;
 	static Scanner keyboardReader = new Scanner(System.in);
 	private static String OS = System.getProperty("os.name").toLowerCase();
+	static TimeBlocks time = new TimeBlocks();
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		Application.launch(Gui.class, args);
+		// Application.launch(Gui.class, args);
 		printWelcomeMsg();
-
+		System.out.println("the time at this instant is " + time.timeAtThisInstant());
 		System.out.println("How many tomatos would you like?");
 		numberOfGoals = keyboardReader.nextInt();
-		
+
 		executeQuestions(numberOfGoals);
-		
+
 		System.exit(0);
 	}
 
-	public static void executeQuestions(int numberOfGoals) throws IOException, InterruptedException {
-		TimeBlocks time = new TimeBlocks();
+	public static void executeQuestions(int numberOfTomatoes) throws IOException, InterruptedException {
+
 		LocalTime startTimeForNextIteration = null;
 
-		for (int i = 1; i < numberOfGoals+1; i++) {
+		for (int i = 1; i < numberOfTomatoes + 1; i++) {
 			if (i == 1) {
 				startTimeForNextIteration = time.timeAtThisInstant();
 			}
-			
+
 			System.out.println("How long do you want work tomato #" + i + " (in min)?");
 			workTimeBlock = keyboardReader.nextInt();
 
@@ -63,22 +62,33 @@ public class Main {
 				System.out.println("\nDo today what others won't. Do tomorrow what other's can't. Let's do this!");
 			}
 			
-			startTimeForNextIteration = time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock,
-					breakTimeBlock);
-			
 			System.out.println("You will finish work at:\n"
 					+ time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock)
 					+ "\nand you will finish your break at:\n"
 					+ time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
-		}
+
 			notificationBasedOnOS("Your work tomato for: " + goal + " is ketchupped",
 					time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock));
-			
+
 			notificationBasedOnOS("Your break tomato for: " + goal + " is ketchupped.",
-				time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
-			
+					time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
+			startTimeForNextIteration = time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock,
+					breakTimeBlock);
 		}
+	}
 	
+	public boolean userClickedPauseButton() {
+		return true;
+	}
+	
+	public void deleteAllAtNotifcations() throws IOException {
+		if (userClickedPauseButton()) {
+			ProcessBuilder pr = new ProcessBuilder();
+			pr.directory();
+			pr.command("/bin/bash", "-c", " for i in `atq | awk '{print $1}'`;do atrm $i;done");
+			pr.start();
+		}
+	}
 
 	public static boolean userAcceptsGoal(String yesOrNo) {
 		String userResponse = removeSpecialChar(yesOrNo.trim());
@@ -88,13 +98,13 @@ public class Main {
 			userAcceptsContract = true;
 		} else if (userResponse.equalsIgnoreCase("sure")) {
 			userAcceptsContract = true;
-		}else if (userResponse.equalsIgnoreCase("affirmative")) {
+		} else if (userResponse.equalsIgnoreCase("affirmative")) {
 			userAcceptsContract = true;
 		} else if (userResponse.equalsIgnoreCase("10-4")) {
 			userAcceptsContract = true;
-		}else if (userResponse.equalsIgnoreCase("okeydokey")) {
+		} else if (userResponse.equalsIgnoreCase("okeydokey")) {
 			userAcceptsContract = true;
-		}else if (userResponse.equalsIgnoreCase("fine")) {
+		} else if (userResponse.equalsIgnoreCase("fine")) {
 			userAcceptsContract = true;
 		} else if (userResponse.equalsIgnoreCase("but I already did something today")) {
 			userAcceptsContract = true;
@@ -106,14 +116,14 @@ public class Main {
 
 	public static void notificationBasedOnOS(String message, LocalTime timeMsgIsDisplayed)
 			throws IOException, InterruptedException {
-		
+
 		if (isUnix()) {
 			ProcessBuilder pr = new ProcessBuilder();
 			pr.directory();
 			pr.command("/bin/bash", "-c", "echo 'notify-send -i face-wink \"" + message + "\"; spd-say \"" + message
 					+ "\" -r -15' | at " + timeMsgIsDisplayed + "");
 			pr.start();
-			
+
 		} else if (isWindows()) {
 
 			System.out.println("The desktop notification program, as of 8/8/18, does not work on Windows");
@@ -158,6 +168,5 @@ public class Main {
 	public static String convertLocalTimeToString(LocalTime time) {
 		return time.toString();
 	}
-
 
 }

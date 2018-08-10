@@ -72,14 +72,14 @@ public class Gui extends Application {
 		return title;
 	}
 
-	public void commandLineGivesGuiInfo(int numberOfGoals, Stage primaryStage) {
-		int min = 6;
+	public void commandLineGivesGuiInfo(Stage primaryStage,int numberOfGoals) {
+		int min = 0;
 		createAndShowGUI(primaryStage, min);
 	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		commandLineGivesGuiInfo(0, primaryStage);
+		commandLineGivesGuiInfo( primaryStage,0);
 		Label label = new Label("Progress Bar Coming Soon!");
 
 	}
