@@ -11,15 +11,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.SortedMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
 
 public class Main {
 	static int numberOfGoals;
@@ -110,7 +104,6 @@ public class Main {
 			System.out.println(K + " " + Y);
 		});
 
-//https://www.mkyong.com/java8/java-8-streams-map-examples/
 		Map<String, Integer> persimmons = filterByValue(goalMapWithTimeInts, m -> m > 25);
 		Map<String, Integer> greenTomatos = filterByValue(goalMapWithTimeInts, m -> m < 25);
 		Map<String, Integer> ripeTomatos = filterByValue(goalMapWithTimeInts, m -> m == 25);
