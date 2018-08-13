@@ -1,7 +1,7 @@
 
 have gui with progress bar display in background until progress bar is empty.
 
-have all data, including user feedback, export to excel sheet
+have all data, including user feedback, export to excel sheet- using lambda expressions
 
 javax gui that takes user input for app params
 after pomodoro time block is complete, gui prompts for user feedback

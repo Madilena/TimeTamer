@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,8 @@ import java.util.Scanner;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import javafx.application.Application;
 
 public class Main {
 	static int numberOfGoals;
@@ -52,9 +55,18 @@ public class Main {
 			}
 
 			System.out.println("How long do you want work tomato #" + i + " (in min)?");
+			while (!keyboardReader.hasNextInt()) {
+				keyboardReader.next();
+				System.out.print("Please enter an integer: ");
+			}
 			workTimeBlock = keyboardReader.nextInt();
 
 			System.out.println("How long do you want break tomato #" + i + " (in min)?");
+
+			while (!keyboardReader.hasNextInt()) {
+				keyboardReader.next();
+				System.out.print("Please enter an integer: ");
+			}
 			breakTimeBlock = keyboardReader.nextInt();
 			keyboardReader.nextLine();
 
@@ -79,11 +91,13 @@ public class Main {
 				addIntsToList(listWorkTime, workTimeBlock);
 				addIntsToList(listBreakTime, breakTimeBlock);
 
-				notificationBasedOnOS("Your work tomato for: " + goal + " is ketchupped",
-						time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock));
-
-				notificationBasedOnOS("Your break tomato for: " + goal + " is ketchupped.", time
-						.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock, breakTimeBlock));
+				 notificationBasedOnOS("Your work tomato for: " + goal + " is ketchupped",
+				 time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock));
+				
+				 notificationBasedOnOS("Your break tomato for: " + goal + " is ketchupped.",
+				 time
+				 .addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock,
+				 breakTimeBlock));
 
 				startTimeForNextIteration = time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration,
 						workTimeBlock, breakTimeBlock);
@@ -92,11 +106,11 @@ public class Main {
 						"Tomato " + i + ": \"" + goal + "\" finishes at " + startTimeForNextIteration, workTimeBlock,
 						breakTimeBlock);
 			}
-			
+
 			addGoalAndSingleTimeToMap(goalMapWithTimeInts, goal, workTimeBlock);
 
 		}
-		
+
 		listWorkTime.stream().reduce((x1, x2) -> x1 + x2).ifPresent(p -> printWorkTime(p));
 		listBreakTime.stream().reduce((x1, x2) -> x1 + x2).ifPresent(p -> printBreakTime(p));
 
@@ -104,13 +118,18 @@ public class Main {
 			System.out.println(K + " " + Y);
 		});
 
-		Map<String, Integer> persimmons = filterByValue(goalMapWithTimeInts, m -> m > 25);
-		Map<String, Integer> greenTomatos = filterByValue(goalMapWithTimeInts, m -> m < 25);
-		Map<String, Integer> ripeTomatos = filterByValue(goalMapWithTimeInts, m -> m == 25);
-		System.out.println("Persimmons (> 25 min):\n" + persimmons);
-		System.out.println("Green Tomatos (< 25 min):\n" + greenTomatos);
-		System.out.println("Ripe Tomatos (25 min):\n" + ripeTomatos);
+		Map<String, Integer> persimmons = filterByValue(goalMapWithTimeInts, isGreaterThan.apply(25));
+		Map<String, Integer> greenTomatos = filterByValue(goalMapWithTimeInts, isLessThan.apply(25));
+		Map<String, Integer> ripeTomatos = filterByValue(goalMapWithTimeInts, equalTo.apply(25));
 
+		System.out.println("Persimmons (goal time > 25 min):\n" + persimmons);
+		System.out.println("Green Tomatos (goal time < 25 min):\n" + greenTomatos);
+		System.out.println("Ripe Tomatos (goal time = 25 min):\n" + ripeTomatos);
+
+	}
+
+	public static boolean valueIsInt(Integer val) {
+		return val instanceof Integer;
 	}
 
 	public static <K, V> Map<K, V> filterByValue(Map<K, V> map, Predicate<V> predicate) {
@@ -118,12 +137,9 @@ public class Main {
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
-	static Function<Integer, Predicate<Integer>> isGreaterThan = (Integer pivot) -> {
-		Predicate<Integer> isGreaterThanPivot = (Integer candidate) -> {
-			return candidate > pivot;
-		};
-		return isGreaterThanPivot;
-	};
+	static Function<Integer, Predicate<Integer>> isGreaterThan = greaterThanNum -> candidate -> candidate > greaterThanNum;
+	static Function<Integer, Predicate<Integer>> isLessThan = lessThanNum -> candidate -> candidate < lessThanNum;
+	static Function<Integer, Predicate<Integer>> equalTo = equalToNum -> candidate -> candidate < equalToNum;
 
 	public static void addGoalAndTimesToMap(Map<String, List<String>> map, String goal, Integer workTime,
 			Integer breakTime) {
