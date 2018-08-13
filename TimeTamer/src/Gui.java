@@ -35,10 +35,12 @@ public class Gui extends Application {
 	private static String PAUSE = "Pause";
 	String newline = "\n";
 	JFXPanel panel = new JFXPanel();
-
-	public void createAndShowGUI(Stage stage, int min) {
+	static Scanner keyboardReader = new Scanner(System.in);
+	TimeBlocks time = new TimeBlocks();
+	
+	public void createAndShowGUI( int min) {
 		// System.out.println(javafx.scene.text.Font.getFamilies());
-
+Stage stage = new Stage();
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
 		grid.setHgap(10);
@@ -72,16 +74,14 @@ public class Gui extends Application {
 		return title;
 	}
 
-	public void commandLineGivesGuiInfo(Stage primaryStage,int numberOfGoals) {
-		int min = 0;
-		createAndShowGUI(primaryStage, min);
-	}
 
-	@Override
 	public void start(Stage primaryStage) throws Exception {
-		commandLineGivesGuiInfo( primaryStage,0);
+		System.out.println("get work time block in min "+time.getWorkTimeBlockInMin());
+		createAndShowGUI(time.getWorkTimeBlockInMin());
 		Label label = new Label("Progress Bar Coming Soon!");
+	
 
 	}
+
 
 }
