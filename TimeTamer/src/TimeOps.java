@@ -1,21 +1,36 @@
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
 import java.util.StringJoiner;
 
-public class TimeBlocks {
-
+public class TimeOps {
 
 	public LocalTime timeAtThisInstant() {
 		LocalTime localTime = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
 		return localTime;
 	}
-	
+
 	public LocalTime addWorkTimeBlockToStartTime(LocalTime startTime, int workMinToAdd) {
 		return startTime.plusMinutes(workMinToAdd);
 	}
-	
+
 	public LocalTime addBreakTimeBlockToWorkTimeBlock(LocalTime startTime, int workMinToAdd, int breakMinToAdd) {
 		return addWorkTimeBlockToStartTime(startTime, workMinToAdd).plusMinutes(breakMinToAdd);
+	}
+
+	public LocalTime addPauseElapsedTimeToObseleteTomatoEndTime(LocalTime pauseStartTime, LocalTime pauseEndTime,
+			LocalTime tomatoEndTimeToAdjust) {
+		LocalTime elapsedTime = findPauseElapsedTime(pauseStartTime, pauseEndTime);
+		LocalTime newTime = tomatoEndTimeToAdjust.plus(elapsedTime.getHour(), ChronoUnit.HOURS)
+				.minus(elapsedTime.getMinute(), ChronoUnit.MINUTES).minus(elapsedTime.getSecond(), ChronoUnit.SECONDS);
+		return newTime;
+	}
+
+	public LocalTime findPauseElapsedTime(LocalTime pauseStartTime, LocalTime pauseEndTime) {
+		LocalTime timeElapsed = pauseEndTime.minus(pauseStartTime.getHour(), ChronoUnit.HOURS)
+				.minus(pauseStartTime.getMinute(), ChronoUnit.MINUTES)
+				.minus(pauseStartTime.getSecond(), ChronoUnit.SECONDS);
+		return timeElapsed;
 	}
 
 	public LocalTime makeStringALocalTime(int timeAsInt) {

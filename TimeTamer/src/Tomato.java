@@ -1,4 +1,6 @@
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tomato {
 
@@ -9,7 +11,7 @@ public class Tomato {
 	private LocalTime tomatoStartTime;
 	private LocalTime workEndTime;
 	private LocalTime breakEndTime;
-
+	
 	public Tomato(int tomNum, String goal, int workTime, int breakTime, LocalTime tomatoStartTime, LocalTime workEndTime, LocalTime breakEndTime) {
 		this.tomatoNumber= tomNum;
 		this.goal = goal;

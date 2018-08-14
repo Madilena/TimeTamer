@@ -36,7 +36,7 @@ public class Gui extends Application {
 	String newline = "\n";
 	JFXPanel panel = new JFXPanel();
 	static Scanner keyboardReader = new Scanner(System.in);
-	TimeBlocks time = new TimeBlocks();
+	TimeOps time = new TimeOps();
 	
 	public void createAndShowGUI( int min) {
 		// System.out.println(javafx.scene.text.Font.getFamilies());
