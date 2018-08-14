@@ -59,7 +59,7 @@ Stage stage = new Stage();
 		// Group root = new Group();
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
-		stage.setTitle("Time Tamer");
+		stage.setTitle("Tomato Time Tamer");
 		stage.show();
 	}
 
@@ -77,7 +77,9 @@ Stage stage = new Stage();
 
 	public void start(Stage primaryStage) throws Exception {
 //		System.out.println("get work time block in min "+tom.getWorkTime());
-//		createAndShowGUI(tom.getWorkTime());
+//		Tomato tom = new Tomato(0, newline, 0, 0, null, null, null);
+		//Main.tomatoes.get(0);
+		//createAndShowGUI(Main.tomatoes.get(0).getWorkTime());
 		Label label = new Label("Progress Bar Coming Soon!");
 	
 
