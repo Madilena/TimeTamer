@@ -4,24 +4,6 @@ import java.util.StringJoiner;
 
 public class TimeBlocks {
 
-	private int workTimeBlockInMin;
-	private int breakTimeBlockInMin;
-
-	public int getWorkTimeBlockInMin() {
-		return workTimeBlockInMin;
-	}
-
-	public void setWorkTimeBlockInMin(int workTimeBlockInMin) {
-		this.workTimeBlockInMin = workTimeBlockInMin;
-	}
-
-	public int getBreakTimeBlockInMin() {
-		return breakTimeBlockInMin;
-	}
-
-	public void setBreakTimeBlockInMin(int breakTimeBlockInMin) {
-		this.breakTimeBlockInMin = breakTimeBlockInMin;
-	}
 
 	public LocalTime timeAtThisInstant() {
 		LocalTime localTime = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);

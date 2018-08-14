@@ -22,154 +22,163 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class Main {
-	  static Stage stage;
-	    static int numberOfGoals;
-	    static int workTimeBlock;
-	    static int breakTimeBlock;
-	    static String goal;
-	    static String nextGoal;
-	    static String acceptGoal;
-	    static Scanner keyboardReader = new Scanner(System.in);
-	    private static String OS = System.getProperty("os.name").toLowerCase();
-	    static TimeBlocks time = new TimeBlocks();
-	    static LinkedHashMap<String, List<String>> goalMap = new LinkedHashMap<>();
-	    static Map<String, Integer> goalMapWithWorkTimeInts = new HashMap<>();
-	    static List<Integer> listWorkTime = new ArrayList<>();
-	    static List<Integer> listBreakTime = new ArrayList<>();
-	    static List<Tomato> tomatos = new ArrayList<>();
+	static Stage stage;
+	static int numberOfGoals;
+	static int workTimeBlock;
+	static int breakTimeBlock;
+	static String goal;
+	static String nextGoal;
+	static String acceptGoal;
+	static Scanner keyboardReader = new Scanner(System.in);
+	private static String OS = System.getProperty("os.name").toLowerCase();
+	static TimeBlocks time = new TimeBlocks();
+	static LinkedHashMap<String, List<String>> goalMap = new LinkedHashMap<>();
+	static Map<String, Integer> goalMapWithWorkTimeInts = new HashMap<>();
+	static List<Integer> listWorkTime = new ArrayList<>();
+	static List<Integer> listBreakTime = new ArrayList<>();
+	static List<Tomato> tomatoes = new ArrayList<>();
 
-	    public static void main(String[] args) throws IOException, InterruptedException {
-//	    Gui gui = new Gui();
-	        
+	public static void main(String[] args) throws IOException, InterruptedException {
+		// Gui gui = new Gui();
 
-	        printWelcomeMsg();
-	        System.out.println("The time at this instant is " + time.timeAtThisInstant());
-	        System.out.println("How many tomatos would you like?");
-	        numberOfGoals = keyboardReader.nextInt();
+		printWelcomeMsg();
+		System.out.println("The time at this instant is " + time.timeAtThisInstant());
+		System.out.println("How many tomatos would you like?");
+		numberOfGoals = keyboardReader.nextInt();
 
-	        executeQuestions(numberOfGoals);
-	        
-	        changeAGoal();
-	        //Application.launch(Gui.class, args);
-	        
-	        System.exit(0);
-	    }
+		executeQuestions(numberOfGoals);
 
-	    public static void executeQuestions(int numberOfTomatoes) throws IOException, InterruptedException {
-	        LocalTime startTimeForThisIteration = null;
-	        LocalTime startTimeForNextIteration = null;
+		changeAGoal();
+		// Application.launch(Gui.class, args);
 
-	        for (int i = 1; i < numberOfTomatoes + 1; i++) {
-	            if (i == 1) {
-	                startTimeForNextIteration = time.timeAtThisInstant();
-	            }
+		System.exit(0);
+	}
 
-	            System.out.println("How long do you want work tomato #" + i + " (in min)?");
-	            while (!keyboardReader.hasNextInt()) {
-	                keyboardReader.next();
-	                System.out.print("Please enter an integer: ");
-	            }
-	            workTimeBlock = keyboardReader.nextInt();
-	            time.setWorkTimeBlockInMin(workTimeBlock);
-	System.out.println("from main the get work time block is "+time.getWorkTimeBlockInMin());
-	            System.out.println("How long do you want break tomato #" + i + " (in min)?");
+	public static void executeQuestions(int numberOfTomatoes) throws IOException, InterruptedException {
+		LocalTime startTimeForThisIteration = null;
+		LocalTime startTimeForNextIteration = null;
 
-	            while (!keyboardReader.hasNextInt()) {
-	                keyboardReader.next();
-	                System.out.print("Please enter an integer: ");
-	            }
-	            breakTimeBlock = keyboardReader.nextInt();
-	            keyboardReader.nextLine();
+		for (int i = 1; i < numberOfTomatoes + 1; i++) {
+			if (i == 1) {
+				startTimeForNextIteration = time.timeAtThisInstant();
+			}
 
-	            System.out.println("What is your goal for tomato #" + i + " ?");
-	            goal = keyboardReader.nextLine();
+			System.out.println("How long do you want work tomato #" + i + " (in min)?");
+			while (!keyboardReader.hasNextInt()) {
+				keyboardReader.next();
+				System.out.print("Please enter an integer: ");
+			}
+			workTimeBlock = keyboardReader.nextInt();
 
-	            System.out.println("\nPlease confirm or deny with Yes or No:\nYou want to work for " + workTimeBlock
-	                    + " min and have a " + breakTimeBlock + " min break.\nYour goal is: " + goal);
-	            acceptGoal = keyboardReader.nextLine();
+			System.out.println("How long do you want break tomato #" + i + " (in min)?");
+			while (!keyboardReader.hasNextInt()) {
+				keyboardReader.next();
+				System.out.print("Please enter an integer: ");
+			}
+			breakTimeBlock = keyboardReader.nextInt();
+			keyboardReader.nextLine();
 
-	            if (!userAcceptsGoal(acceptGoal)) {
-	                System.out.println("\nDo today what others won't. Do tomorrow what other's can't. Let's start over!");
-	                i = i - 1;
-	            }
+			System.out.println("What is your goal for tomato #" + i + " ?");
+			goal = keyboardReader.nextLine();
 
-	            if (userAcceptsGoal(acceptGoal)) {
-	                startTimeForThisIteration = startTimeForNextIteration;
-	                Tomato tom =new Tomato(i, goal, workTimeBlock, breakTimeBlock);
-	                tomatos.add(tom);
-	               
-	                
-	                System.out.println("You will finish work at:\n"
-	                        + time.addWorkTimeBlockToStartTime(startTimeForNextIteration, tom.getWorkTime())
-	                        + "\nand you will finish your break at:\n" + time.addBreakTimeBlockToWorkTimeBlock(
-	                                startTimeForNextIteration, tom.getWorkTime(), tom.getBreakTime()));
-	                
-	                
-	                addIntsToList(listWorkTime, tom.getWorkTime());
-	                addIntsToList(listBreakTime, tom.getBreakTime());
+			System.out.println("\nPlease confirm or deny with Yes or No:\nYou want to work for " + workTimeBlock
+					+ " min and have a " + breakTimeBlock + " min break.\nYour goal is: " + goal);
+			acceptGoal = keyboardReader.nextLine();
 
-	                // notificationBasedOnOS("Your work tomato for: " + goal + " is ketchupped",
-	                // time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock));
-	                //
-	                // notificationBasedOnOS("Your break tomato for: " + goal + " is ketchupped.",
-	                // time
-	                // .addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock,
-	                // breakTimeBlock));
+			if (!userAcceptsGoal(acceptGoal)) {
+				System.out.println("\nDo today what others won't. Do tomorrow what other's can't. Let's start over!");
+				i = i - 1;
+			}
 
-	                startTimeForNextIteration = time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration,
-	                        tom.getWorkTime(), tom.getBreakTime());
+			if (userAcceptsGoal(acceptGoal)) {
+				startTimeForThisIteration = startTimeForNextIteration;
 
-	                
-	                addGoalAndTimesToMap(goalMap, "Tomato " + i + ": \"" + tom.getGoal() + "\" starts at "
-	                        + startTimeForThisIteration + " and finishes at " + startTimeForNextIteration, tom.getWorkTime(),
-	                        tom.getBreakTime());
-	                 
-	                addGoalAndSingleTimeToMap(goalMapWithWorkTimeInts, tom.getGoal(), tom.getWorkTime());
-	               
-	            
-	            }
-	  
-	        }
-	        
-	        listWorkTime.stream().reduce((x1, x2) -> x1 + x2).ifPresent(p -> printWorkTime(p));
-	        listBreakTime.stream().reduce((x1, x2) -> x1 + x2).ifPresent(p -> printBreakTime(p));
+				LocalTime workEndTime = time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock);
 
-	        goalMap.forEach((K, Y) -> {
-	            System.out.println(K + " " + Y);
-	        });
+				LocalTime breakEndTime = time.addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock,
+						breakTimeBlock);
 
-	        Map<String, Integer> persimmons = filterByValue(goalMapWithWorkTimeInts, isGreaterThan.apply(25));
-	        Map<String, Integer> greenTomatos = filterByValue(goalMapWithWorkTimeInts, isLessThan.apply(25));
-	        Map<String, Integer> ripeTomatos = filterByValue(goalMapWithWorkTimeInts, isEqualTo.apply(25));
-	    
-	        System.out.println("Persimmons (goal time > 25 min):\n" + persimmons);
-	        System.out.println("Green Tomatos (goal time < 25 min):\n" + greenTomatos);
-	        System.out.println("Ripe Tomatos (goal time = 25 min):\n" + ripeTomatos);
+				Tomato tom = new Tomato(i, goal, workTimeBlock, breakTimeBlock, startTimeForThisIteration, workEndTime,
+						breakEndTime);
+				tomatoes.add(tom);
 
-	    }
-	    
-	    public static void changeAGoal() {
-	        System.out.println("Do you need to change a goal?");
-	        acceptGoal = keyboardReader.nextLine();
-	        if(userAcceptsGoal(acceptGoal)) {
-	            System.out.println("What goal do you want to change");
-	            String oldGoal = keyboardReader.nextLine();
-	            System.out.println("What do you want to change it to");
-	            String newGoal = keyboardReader.nextLine();
-	            changeGoal( oldGoal, newGoal);
-	            System.out.println("new goalMapWithWorkTimeInts "+ goalMapWithWorkTimeInts);
-	            
-	        }
-	        
-	        
-	    }
-	
-	 
-	   public String name(int val) {
-		   return "name"+ Integer.toString(val);
-	   }
-	public static boolean valueIsInt(Integer val) {
-		return val instanceof Integer;
+				System.out.println("You will finish work at:\n" + workEndTime + "\nand you will finish your break at:\n"
+						+ breakEndTime);
+
+				addIntsToList(listWorkTime, tom.getWorkTime());
+				addIntsToList(listBreakTime, tom.getBreakTime());
+
+				// notificationBasedOnOS("Your work tomato for: " + goal + " is ketchupped",
+				// time.addWorkTimeBlockToStartTime(startTimeForNextIteration, workTimeBlock));
+				//
+				// notificationBasedOnOS("Your break tomato for: " + goal + " is ketchupped.",
+				// time
+				// .addBreakTimeBlockToWorkTimeBlock(startTimeForNextIteration, workTimeBlock,
+				// breakTimeBlock));
+
+				startTimeForNextIteration = breakEndTime;
+
+				addGoalAndTimesToMap(goalMap,
+						"Tomato " + i + ": \"" + tom.getGoal() + "\" starts at " + startTimeForThisIteration
+								+ " and finishes at " + startTimeForNextIteration,
+						tom.getWorkTime(), tom.getBreakTime());
+
+				addGoalAndSingleTimeToMap(goalMapWithWorkTimeInts, tom.getGoal(), tom.getWorkTime());
+
+			}
+
+		}
+
+		// adds up all the work times
+		tomatoes.stream().map(x -> x.getWorkTime()).collect(Collectors.toList()).stream().reduce((x1, x2) -> x1 + x2)
+				.ifPresent(p -> printWorkTime(p));
+
+		// adds up all the break times
+		tomatoes.stream().map(x -> x.getBreakTime()).collect(Collectors.toList()).stream().reduce((x1, x2) -> x1 + x2)
+				.ifPresent(p -> printBreakTime(p));
+
+		// prints out all the goals
+		tomatoes.stream().forEach(x -> printTomatoGoal(x));
+
+		// prints out all the work times
+		tomatoes.stream().forEach(x -> printTomatoWorkTime(x));
+
+		// prints out all the break times
+		tomatoes.stream().forEach(x -> printTomatoBreakTime(x));
+
+		// prints when all the tomatoes finish their work
+		tomatoes.stream().forEach(x -> printWorkEndTime(x));
+
+		// prints when all the tomatoes finish their break (when they are ketchupped)
+		tomatoes.stream().forEach(x -> printBreakEndTime(x));
+
+		goalMap.forEach((K, Y) -> {
+			System.out.println(K + " " + Y);
+		});
+
+		Map<String, Integer> persimmons = filterByValue(goalMapWithWorkTimeInts, isGreaterThan.apply(25));
+		Map<String, Integer> greenTomatos = filterByValue(goalMapWithWorkTimeInts, isLessThan.apply(25));
+		Map<String, Integer> ripeTomatos = filterByValue(goalMapWithWorkTimeInts, isEqualTo.apply(25));
+
+		System.out.println("Persimmons (goal time > 25 min):\n" + persimmons);
+		System.out.println("Green Tomatos (goal time < 25 min):\n" + greenTomatos);
+		System.out.println("Ripe Tomatos (goal time = 25 min):\n" + ripeTomatos);
+
+	}
+
+	public static void changeAGoal() {
+		System.out.println("Do you need to change a goal?");
+		acceptGoal = keyboardReader.nextLine();
+		if (userAcceptsGoal(acceptGoal)) {
+			System.out.println("What goal do you want to change");
+			String oldGoal = keyboardReader.nextLine();
+			System.out.println("What do you want to change it to");
+			String newGoal = keyboardReader.nextLine();
+			changeGoal(oldGoal, newGoal);
+			tomatoes.stream().forEach(x -> printTomatoGoal(x));
+
+		}
+
 	}
 
 	public static <K, V> Map<K, V> filterByValue(Map<K, V> map, Predicate<V> predicate) {
@@ -181,19 +190,27 @@ public class Main {
 		return map.entrySet().stream().filter(x -> predicate.test(x.getKey()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
-	
-	public static  void changeGoal(String oldGoal, String newGoal) {
-		tomatos.stream().filter(x->x.getGoal().equals(oldGoal)).map(x -> newGoal);
+
+	public static void changeGoal(String oldGoal, String newGoal) {
+		tomatoes.stream().filter(x -> x.getGoal().equals(oldGoal)).forEach(x -> x.setGoal(newGoal));
 	}
-	
-	public static <V> Map<String, V>  changeKeyInMap(Map <String,V> map,String keyText, String newText) {
-		Map<String,V> newMap = filterByKey(map, matchString.apply(keyText));
+
+	public static void changeWorkTime(int oldWorkTime, int newWorkTime) {
+		tomatoes.stream().filter(x -> x.getWorkTime() == oldWorkTime).forEach(x -> x.setWorkTime(newWorkTime));
+	}
+
+	public static void changeBreakTime(int oldBreakTime, int newBreakTime) {
+		tomatoes.stream().filter(x -> x.getWorkTime() == oldBreakTime).forEach(x -> x.setWorkTime(newBreakTime));
+	}
+
+	public static <V> Map<String, V> changeKeyInMap(Map<String, V> map, String keyText, String newText) {
+		Map<String, V> newMap = filterByKey(map, matchString.apply(keyText));
 		map.remove(keyText);
 		newMap.put(newText, newMap.remove(keyText));
 		map.putAll(newMap);
 		return map;
 	}
-	
+
 	public static String changeString(String oldText, String newText) {
 		return oldText.replace(oldText, newText);
 	}
@@ -223,6 +240,26 @@ public class Main {
 
 	public static void addIntsToList(List<Integer> list, Integer num) {
 		list.add(num);
+	}
+
+	public static void printTomatoGoal(Tomato x) {
+		System.out.println("Tomato " + x.getTomatoNumber() + "'s goal is " + x.getGoal());
+	}
+
+	public static void printTomatoWorkTime(Tomato x) {
+		System.out.println("Tomato " + x.getTomatoNumber() + "'s work time is: " + x.getWorkTime());
+	}
+
+	public static void printTomatoBreakTime(Tomato x) {
+		System.out.println("Tomato " + x.getTomatoNumber() + "'s break time is: " + x.getBreakTime());
+	}
+
+	public static void printWorkEndTime(Tomato x) {
+		System.out.println("Tomato " + x.getTomatoNumber() + " will finish its work time at " + x.getWorkEndTime());
+	}
+
+	public static void printBreakEndTime(Tomato x) {
+		System.out.println("Tomato " + x.getTomatoNumber() + " will finish its break time at " + x.getBreakEndTime());
 	}
 
 	public static void printWorkTime(int min) {

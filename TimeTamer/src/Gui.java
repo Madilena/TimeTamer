@@ -76,8 +76,8 @@ Stage stage = new Stage();
 
 
 	public void start(Stage primaryStage) throws Exception {
-		System.out.println("get work time block in min "+time.getWorkTimeBlockInMin());
-		createAndShowGUI(time.getWorkTimeBlockInMin());
+//		System.out.println("get work time block in min "+tom.getWorkTime());
+//		createAndShowGUI(tom.getWorkTime());
 		Label label = new Label("Progress Bar Coming Soon!");
 	
 

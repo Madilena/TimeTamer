@@ -1,3 +1,4 @@
+import java.time.LocalTime;
 
 public class Tomato {
 
@@ -5,12 +6,18 @@ public class Tomato {
 	private String goal;
 	private int workTime;
 	private int breakTime;
+	private LocalTime tomatoStartTime;
+	private LocalTime workEndTime;
+	private LocalTime breakEndTime;
 
-	public Tomato(int tomNum, String goal, int workTime, int breakTime) {
+	public Tomato(int tomNum, String goal, int workTime, int breakTime, LocalTime tomatoStartTime, LocalTime workEndTime, LocalTime breakEndTime) {
 		this.tomatoNumber= tomNum;
 		this.goal = goal;
 		this.workTime = workTime;
 		this.breakTime = breakTime;
+		this.tomatoStartTime = tomatoStartTime;
+		this.workEndTime = workEndTime;
+		this.breakEndTime = breakEndTime;
 	}
 
 	public int getTomatoNumber() {
@@ -43,6 +50,30 @@ public class Tomato {
 
 	public void setBreakTime(int breakMin) {
 		this.breakTime = breakMin;
+	}
+
+	public LocalTime getTomatoStartTime() {
+		return tomatoStartTime;
+	}
+
+	public void setTomatoStartTime(LocalTime tomatoStartTime) {
+		this.tomatoStartTime = tomatoStartTime;
+	}
+
+	public LocalTime getWorkEndTime() {
+		return workEndTime;
+	}
+
+	public void setWorkEndTime(LocalTime workEndTime) {
+		this.workEndTime = workEndTime;
+	}
+
+	public LocalTime getBreakEndTime() {
+		return breakEndTime;
+	}
+
+	public void setBreakEndTime(LocalTime breakEndTime) {
+		this.breakEndTime = breakEndTime;
 	}
 
 }
