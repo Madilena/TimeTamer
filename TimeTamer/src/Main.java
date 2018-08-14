@@ -46,18 +46,15 @@ public class Main {
 		executeQuestions(numberOfGoals);
 		changeAGoal();
 		changeAWorkTime();
+		changeABreakTime();
 		// createWorkEndNotificationForEachTomato();
 		// createBreakEndNotificationForEachTomato();
 
-		// Application.launch(Gui.class, args);
 		WriteExcel.createExcelSheet();
+		//Application.launch(Gui.class, args);
 		System.exit(0);
 	}
 
-	public static void scheduleTheGui(String[] args) {
-		Timer timer = new Timer();
-		// timer.schedule(Application.launch(Gui.class, args), date);
-	}
 
 	public static void executeQuestions(int numberOfTomatoes) throws IOException, InterruptedException {
 		LocalTime startTimeForThisIteration = null;
@@ -184,6 +181,22 @@ public class Main {
 			int newWorkMin = keyboardReader.nextInt();
 			TomatoOps.changeWorkTimeOfSpecificTomato(num, newWorkMin);
 			TomatoOps.tomatoes.stream().forEach(x -> TomatoOps.printTomatoWorkTime(x));
+		}
+	}
+	
+	public static void changeABreakTime() {
+		System.out.println("Do you need to change a break time?");
+		acceptGoal = keyboardReader.nextLine();
+		if (userResponse(acceptGoal)) {
+			System.out.println("What tomato number needs its break time changed?");
+			expectInt();
+			int num = keyboardReader.nextInt();
+			filterTomatoByNumber(TomatoOps.tomatoes, isEqualTo.apply(num));
+			System.out.println("What break time does it need?");
+			expectInt();
+			int newBreakMin = keyboardReader.nextInt();
+			TomatoOps.changeBreakTimeOfSpecificTomato(num, newBreakMin);
+			TomatoOps.tomatoes.stream().forEach(x -> TomatoOps.printTomatoBreakTime(x));
 		}
 	}
 
@@ -353,7 +366,7 @@ public class Main {
 
 	public static void expectInt() {
 		while (!keyboardReader.hasNextInt()) {
-			keyboardReader.next();
+			keyboardReader.next(); 
 			enterIntPls();
 		}
 	}
@@ -373,6 +386,7 @@ public class Main {
 
 	public static void printStartMsg() {
 		System.out.println("Don't let your dreams be dreams! Let's plan out your goals for today!\n");
+		System.out.println("Today's Date: "+time.todaysDate());
 		System.out.println("The time at this instant is " + time.timeAtThisInstant());
 		System.out.println("How many tomatoes would you like?");
 	}

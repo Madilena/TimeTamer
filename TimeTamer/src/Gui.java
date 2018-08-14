@@ -1,6 +1,14 @@
 
 import java.time.LocalTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalField;
+import java.util.List;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
@@ -37,10 +45,11 @@ public class Gui extends Application {
 	JFXPanel panel = new JFXPanel();
 	static Scanner keyboardReader = new Scanner(System.in);
 	TimeOps time = new TimeOps();
-	
-	public void createAndShowGUI( int min) {
+
+	public void createAndShowGUI(int min) {
+
 		// System.out.println(javafx.scene.text.Font.getFamilies());
-Stage stage = new Stage();
+		Stage stage = new Stage();
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
 		grid.setHgap(10);
@@ -74,16 +83,28 @@ Stage stage = new Stage();
 		return title;
 	}
 
-
 	public void start(Stage primaryStage) throws Exception {
-//		System.out.println("get work time block in min "+tom.getWorkTime());
-//		Tomato tom = new Tomato(0, newline, 0, 0, null, null, null);
-		//Main.tomatoes.get(0);
-		//createAndShowGUI(Main.tomatoes.get(0).getWorkTime());
+		scheduleTheGui() ;
 		Label label = new Label("Progress Bar Coming Soon!");
-	
 
 	}
 
+	TimerTask task = new TimerTask() {
+		//Platform.runLater(new Runnable(){
+		public void run() {
+			TomatoOps.tomatoes.stream().forEach(x -> createAndShowGUI(x.getWorkTime()));
+			  System.exit(0);
+		}
+	};
+	//;)}
+
+	public void scheduleTheGui() {
+		
+		Timer timer = new Timer();
+		List<Long> startTimesAsLongs = TomatoOps.tomatoes.stream().map(x -> x.getTomatoStartTime().getLong(ChronoField.MINUTE_OF_HOUR))
+				.collect(Collectors.toList());
+
+		startTimesAsLongs.stream().forEach(x -> timer.schedule(task, x));
+	}
 
 }

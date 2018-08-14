@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAmount;
@@ -8,6 +9,10 @@ public class TimeOps {
 	public LocalTime timeAtThisInstant() {
 		LocalTime localTime = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
 		return localTime;
+	}
+	
+	public LocalDateTime todaysDate() {
+		return LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
 	}
 
 	public LocalTime addWorkTimeBlockToStartTime(LocalTime startTime, int workMinToAdd) {

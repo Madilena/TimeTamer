@@ -42,7 +42,7 @@ public class TomatoOps extends Tomato {
 		tomatoes.stream().forEach(x -> printBreakEndTime(x));
 
 	}
-
+ 
 	public static void changeGoal(String oldGoal, String newGoal) {
 		tomatoes.stream().filter(x -> x.getGoal().equals(oldGoal)).forEach(x -> x.setGoal(newGoal));
 	}
@@ -53,6 +53,10 @@ public class TomatoOps extends Tomato {
 	
 	public static void changeWorkTimeOfSpecificTomato(int tomNum, int newWorkTime) {
 		tomatoes.stream().filter(x -> x.getTomatoNumber() == tomNum).forEach(x -> x.setWorkTime(newWorkTime));
+	}
+	
+	public static void changeBreakTimeOfSpecificTomato(int tomNum, int newWorkTime) {
+		tomatoes.stream().filter(x -> x.getTomatoNumber() == tomNum).forEach(x -> x.setBreakTime(newWorkTime));
 	}
 
 	public static void changeBreakTime(int oldBreakTime, int newBreakTime) {
