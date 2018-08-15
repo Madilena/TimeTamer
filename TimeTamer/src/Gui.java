@@ -16,6 +16,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
@@ -83,28 +84,40 @@ public class Gui extends Application {
 		return title;
 	}
 
+
+
 	public void start(Stage primaryStage) throws Exception {
-		scheduleTheGui() ;
-		Label label = new Label("Progress Bar Coming Soon!");
+//		scheduleTheGui();
+//		Label label = new Label("Progress Bar Coming Soon!");
 
 	}
 
-	TimerTask task = new TimerTask() {
-		//Platform.runLater(new Runnable(){
-		public void run() {
-			TomatoOps.tomatoes.stream().forEach(x -> createAndShowGUI(x.getWorkTime()));
-			  System.exit(0);
-		}
-	};
-	//;)}
-
-	public void scheduleTheGui() {
-		
-		Timer timer = new Timer();
-		List<Long> startTimesAsLongs = TomatoOps.tomatoes.stream().map(x -> x.getTomatoStartTime().getLong(ChronoField.MINUTE_OF_HOUR))
-				.collect(Collectors.toList());
-
-		startTimesAsLongs.stream().forEach(x -> timer.schedule(task, x));
-	}
+//	public void executeTask() {
+//		 Platform.runLater(new Runnable() {
+//		      
+//	
+//	TimerTask task = new TimerTask() {
+//		//Platform.runLater(new Runnable(){
+//		public void run() {
+//			TomatoOps.tomatoes.stream().forEach(x -> createAndShowGUI(x.getWorkTime()));
+//			  System.exit(0);
+//		}
+//	}
+//
+//	@Override
+//	public void run() {
+//		// TODO Auto-generated method stub
+//		
+//	}}}
+//	 ;)}
+//
+//	public void scheduleTheGui() {
+//
+//		Timer timer = new Timer();
+//		List<Long> startTimesAsLongs = TomatoOps.tomatoes.stream()
+//				.map(x -> x.getTomatoStartTime().getLong(ChronoField.MINUTE_OF_HOUR)).collect(Collectors.toList());
+//
+//		startTimesAsLongs.stream().forEach(x -> timer.schedule(task, x));
+//	}
 
 }
